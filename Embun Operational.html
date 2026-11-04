@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Operasional Kendaraan</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .app-card { max-width: 500px; margin: 80px auto; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .btn-launch { background-color: #0d6efd; color: white; padding: 15px; font-size: 1.2rem; font-weight: bold; border-radius: 12px; transition: all 0.3s ease; }
+        .btn-launch:hover { background-color: #0b5ed7; transform: translateY(-2px); color: white; }
+        .icon-box { font-size: 4rem; color: #0d6efd; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container px-4">
+    <div class="card app-card p-4 p-md-5 text-center bg-white">
+        <!-- Logo / Icon -->
+        <div class="icon-box">🚗</div>
+        
+        <!-- Judul Aplikasi -->
+        <h3 class="fw-bold text-dark mb-2">Sistem Operasional Armada</h3>
+        <p class="text-muted mb-4">Pencatatan Operasional & Pengajuan Ganti Ban Kendaraan Mandiri</p>
+        
+        <hr class="my-4 text-muted">
+        
+        <!-- Panduan Singkat untuk Supir -->
+        <div class="text-start mb-4 bg-light p-3 rounded-3" style="font-size: 0.95rem;">
+            <h6 class="fw-bold text-secondary">📋 Cara Pengajuan:</h6>
+            <ul class="mb-0 ps-3 text-secondary">
+                <li>Klik tombol <strong>Buka Formulir</strong> di bawah.</li>
+                <li>Isi data pemohon dan plat nomor armada.</li>
+                <li>Foto komponen fisik ban/aki yang rusak sebagai bukti.</li>
+                <li>Tekan kirim. Data akan langsung terdata di kantor.</li>
+            </ul>
+        </div>
+
+        <!-- Tombol Utama Pengalihan Mulus -->
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe2SudsLIhKx8EIzuzv819rdXAZP2C4RgDXpcjV2625x1Vm8Q/viewform" class="btn btn-launch w-100 shadow-sm d-flex align-middle justify-content-center gap-2">
+            <span>🚀 Buka Formulir Pengajuan</span>
+        </a>
+        
+        <small class="text-muted d-block mt-3">Sistem terintegrasi otomatis dengan Google Sheets & Drive</small>
+    </div>
+</div>
+
+</body>
+</html>
