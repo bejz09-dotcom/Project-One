@@ -3,49 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Operasional Kendaraan</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Portal Operasional Armada</title>
     <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .app-card { max-width: 500px; margin: 80px auto; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .btn-launch { background-color: #0d6efd; color: white; padding: 15px; font-size: 1.2rem; font-weight: bold; border-radius: 12px; transition: all 0.3s ease; }
+        .app-card { max-width: 550px; margin: 40px auto; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .btn-launch { background-color: #0d6efd; color: white; padding: 14px; font-size: 1.1rem; font-weight: bold; border-radius: 12px; transition: all 0.3s ease; }
         .btn-launch:hover { background-color: #0b5ed7; transform: translateY(-2px); color: white; }
-        .icon-box { font-size: 4rem; color: #0d6efd; margin-bottom: 15px; }
+        .icon-box { font-size: 3.5rem; margin-bottom: 10px; }
+        .status-card { border-left: 5px solid #0d6efd; background-color: #f8f9fa; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container px-4">
-    <div class="card app-card p-4 p-md-5 text-center bg-white">
-        <!-- Logo / Icon -->
-        <div class="icon-box">🚗</div>
-        
-        <!-- Judul Aplikasi -->
-        <h3 class="fw-bold text-dark mb-2">Sistem Operasional Armada</h3>
-        <p class="text-muted mb-4">Pencatatan Operasional & Pengajuan Ganti Ban Kendaraan Mandiri</p>
-        
-        <hr class="my-4 text-muted">
-        
-        <!-- Panduan Singkat untuk Supir -->
-        <div class="text-start mb-4 bg-light p-3 rounded-3" style="font-size: 0.95rem;">
-            <h6 class="fw-bold text-secondary">📋 Cara Pengajuan:</h6>
-            <ul class="mb-0 ps-3 text-secondary">
-                <li>Klik tombol <strong>Buka Formulir</strong> di bawah.</li>
-                <li>Isi data pemohon dan plat nomor armada.</li>
-                <li>Foto komponen fisik ban/aki yang rusak sebagai bukti.</li>
-                <li>Tekan kirim. Data akan langsung terdata di kantor.</li>
-            </ul>
+<div class="container px-3">
+    <div class="card app-card p-4 p-md-5 bg-white">
+        <!-- Header Portal -->
+        <div class="text-center">
+            <div class="icon-box">🚗</div>
+            <h3 class="fw-bold text-dark mb-1">Sistem Operasional Armada</h3>
+            <p class="text-muted mb-4">Pengajuan Perbaikan & Cek Status Persetujuan</p>
         </div>
 
-        <!-- Tombol Utama Pengalihan Mulus -->
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe2SudsLIhKx8EIzuzv819rdXAZP2C4RgDXpcjV2625x1Vm8Q/viewform" class="btn btn-launch w-100 shadow-sm d-flex align-middle justify-content-center gap-2">
-            <span>🚀 Buka Formulir Pengajuan</span>
+        <!-- BAGIAN 1: TOMBOL FORM PENGAJUAN -->
+        <a href="https://google.com" class="btn btn-launch w-100 shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3">
+            <span>🚀 Buat Pengajuan Baru</span>
         </a>
-        
-        <small class="text-muted d-block mt-3">Sistem terintegrasi otomatis dengan Google Sheets & Drive</small>
+
+        <!-- Link cepat melompat ke bagian cek status -->
+        <div class="text-center mb-4">
+            <a href="#cek-status-section" class="text-decoration-none fw-semibold text-primary">
+                🔍 Sudah mengajukan? Cek Status Pengajuan di bawah ↓
+            </a>
+        </div>
+
+        <hr class="my-4 text-muted">
+
+        <!-- BAGIAN 2: FITUR CEK STATUS PENGAJUAN -->
+        <div id="cek-status-section">
+            <h5 class="fw-bold text-dark mb-2">🔍 Cek Status Pengajuan</h5>
+            <p class="text-muted small mb-3">Masukkan Plat Nomor kendaraan untuk melihat status persetujuan dari kantor.</p>
+            
+            <div class="input-group mb-3">
+                <input type="text" id="searchPlate" class="form-control form-control-lg text-uppercase" placeholder="Contoh: B 1234 CD">
+                <button class="btn btn-dark px-4 fw-bold" type="button" onclick="cekStatus()">Cari</button>
+            </div>
+
+            <!-- Area Hasil Pencarian -->
+            <div id="loadingText" class="text-center text-muted my-3 d-none">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div> Mengambil data terbaru...
+            </div>
+            
+            <div id="resultContainer" class="mt-3"></div>
+        </div>
     </div>
 </div>
+
+<script>
+    // GANTI TEKS DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhvD97R0mK0JAaUA_OlkjHFo9XGQv6J9XWHrzCR6uFMsIaf98yh4-W3VcZTkzWxriP/exec";
+
+    let cachedData = null;
+
+    async function cekStatus() {
+        const inputPlat = document.getElementById("searchPlate").value.trim().toUpperCase().replace(/\s+/g, '');
+        const resultContainer = document.getElementById("resultContainer");
+        const loadingText = document.getElementById("loadingText");
+
+        if (!inputPlat) {
+            alert("Silakan masukkan Plat Nomor kendaraan terlebih dahulu!");
+            return;
+        }
+
+        resultContainer.innerHTML = "";
+        loadingText.classList.remove("d-none");
+
+        try {
+            // Mengambil data dari Google Sheets jika belum tersimpan di memori sementara
+            if (!cachedData) {
+                const response = await fetch(SCRIPT_URL);
+                cachedData = await response.json();
+            }
+
+            loadingText.classList.add("d-none");
+
+            // Mencocokkan plat nomor (mengabaikan perbedaan spasi)
+            const filtered = cachedData.filter(item => 
+                item.plat.replace(/\s+/g, '') === inputPlat
+            );
+
+            if (filtered.length === 0) {
+                resultContainer.innerHTML = `
+                    <div class="alert alert-warning text-center small">
+                        Data pengajuan untuk plat nomor <strong>${document.getElementById("searchPlate").value.toUpperCase()}</strong> tidak ditemukan.
+                    </div>`;
+                return;
+            }
+
+            // Menampilkan daftar pengajuan untuk plat nomor tersebut
+            filtered.forEach(item => {
+                let badgeColor = "bg-warning text-dark";
+                let borderColor = "#ffc107";
+
+                if (item.status.toLowerCase().includes("setuju")) {
+                    badgeColor = "bg-success";
+                    borderColor = "#198754";
+                } else if (item.status.toLowerCase().includes("tolak")) {
+                    badgeColor = "bg-danger";
+                    borderColor = "#dc3545";
+                } else if (item.status.toLowerCase().includes("selesai")) {
+                    badgeColor = "bg-primary";
+                    borderColor = "#0d6efd";
+                }
+
+                const cardHTML = `
+                    <div class="p-3 mb-2 status-card shadow-sm" style="border-left-color: ${borderColor};">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark">${item.plat} — ${item.pengajuan}</span>
+                            <span class="badge ${badgeColor}">${item.status}</span>
+                        </div>
+                        <div class="small text-muted mb-1">Tanggal: ${item.tanggal} | Pemohon: ${item.nama}</div>
+                        ${item.catatan && item.catatan !== "-" ? `<div class="small text-dark bg-white p-2 rounded border mt-2"><strong>Catatan Admin:</strong> ${item.catatan}</div>` : ""}
+                    </div>
+                `;
+                resultContainer.insertAdjacentHTML("beforeend", cardHTML);
+            });
+
+        } catch (error) {
+            loadingText.classList.add("d-none");
+            resultContainer.innerHTML = `<div class="alert alert-danger small">Gagal memuat data. Pastikan koneksi internet lancar.</div>`;
+            console.error(error);
+        }
+    }
+</script>
 
 </body>
 </html>
