@@ -25,22 +25,56 @@
         .header h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
         .header p { font-size: 14px; color: #65676b; }
 
-        /* Tombol Utama Buat Pengajuan */
-        .btn-launch {
+        /* Form Login */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #333; }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            border: 1px solid #ccd0d5;
+            border-radius: 8px;
+        }
+        .btn-primary {
             display: block;
             width: 100%;
             background-color: #0d6efd;
             color: #ffffff;
+            border: none;
             text-decoration: none;
             text-align: center;
-            padding: 15px;
+            padding: 14px;
             font-size: 16px;
             font-weight: 700;
             border-radius: 10px;
-            margin-bottom: 16px;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        .btn-launch:hover { background-color: #0b5ed7; }
+        .btn-primary:hover { background-color: #0b5ed7; }
+        .btn-primary:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+        /* Top Bar User & Logout */
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e7f1ff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #084298;
+        }
+        .btn-logout {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
         .jump-link {
             display: block;
@@ -49,7 +83,7 @@
             color: #0d6efd;
             text-decoration: none;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin: 16px 0 24px 0;
         }
         hr { border: 0; border-top: 1px solid #e4e6eb; margin: 20px 0; }
 
@@ -75,7 +109,6 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        .search-box button:hover { background-color: #343a40; }
 
         /* Kartu Hasil Pencarian */
         .result-card {
@@ -121,24 +154,52 @@
             text-align: center;
             background-color: #fff3cd;
             color: #664d03;
+            margin-top: 12px;
         }
+        .alert-danger { background-color: #f8d7da; color: #842029; }
         .loading { text-align: center; font-size: 14px; color: #65676b; padding: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
+<!-- HALAMAN 1: LOGIN SCREEN -->
+<div id="loginSection" class="app-card">
+    <div class="header">
+        <div class="icon-box">🔐</div>
+        <h2>Login Portal Armada</h2>
+        <p>Masukkan Nomor HP dan Password yang terdaftar di kantor</p>
+    </div>
+
+    <form id="loginForm" onsubmit="prosesLogin(event)">
+        <div class="form-group">
+            <label for="loginHp">Nomor HP</label>
+            <input type="tel" id="loginHp" placeholder="Contoh: 08123456789" required>
+        </div>
+        <div class="form-group">
+            <label for="loginPass">Password</label>
+            <input type="password" id="loginPass" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" id="btnLogin" class="btn-primary">Masuk</button>
+    </form>
+
+    <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+</div>
+
+<!-- HALAMAN 2: PORTAL UTAMA (TERKUNCI SEBELUM LOGIN) -->
+<div id="portalSection" class="app-card" style="display: none;">
+    <div class="user-bar">
+        <span>👤 Halo, <strong id="userDisplayName">Supir</strong></span>
+        <button type="button" class="btn-logout" onclick="prosesLogout()">Keluar</button>
+    </div>
+
     <div class="header">
         <div class="icon-box">🚗</div>
         <h2>Sistem Operasional Armada</h2>
         <p>Pengajuan Perbaikan & Cek Status Persetujuan</p>
     </div>
 
-    <!-- Tombol Utama ke Google Form -->
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe2SudsLIhKx8EIzuzv819rdXAZP2C4RgDXpcjV2625x1Vm8Q/viewform" class="btn-launch">
-    🚀 Buat Pengajuan Baru
-</a>
-
+    <a href="https://google.com" class="btn-primary">
+        🚀 Buat Pengajuan Baru
     </a>
 
     <a href="#cek-status-section" class="jump-link">
@@ -147,7 +208,6 @@
 
     <hr>
 
-    <!-- Bagian Cek Status -->
     <div id="cek-status-section" class="status-section">
         <h3>🔍 Cek Status Pengajuan</h3>
         <p>Masukkan Plat Nomor kendaraan untuk melihat status persetujuan dari kantor.</p>
@@ -168,77 +228,59 @@
 
     let cachedData = null;
 
-    async function cekStatus() {
-        const inputRaw = document.getElementById("searchPlate").value.trim();
-        const inputPlat = inputRaw.toUpperCase().replace(/\s+/g, '');
-        const resultContainer = document.getElementById("resultContainer");
-        const loadingText = document.getElementById("loadingText");
-
-        if (!inputPlat) {
-            alert("Silakan masukkan Plat Nomor kendaraan terlebih dahulu!");
-            return;
+    // Cek apakah supir sudah pernah login sebelumnya di HP ini
+    window.onload = function() {
+        const savedUser = localStorage.getItem("armada_user");
+        if (savedUser) {
+            tampilkanPortal(savedUser);
         }
+    };
 
-        resultContainer.innerHTML = "";
-        loadingText.style.display = "block";
+    async function prosesLogin(e) {
+        e.preventDefault();
+        const noHp = document.getElementById("loginHp").value.trim();
+        const password = document.getElementById("loginPass").value.trim();
+        const btnLogin = document.getElementById("btnLogin");
+        const errorBox = document.getElementById("loginError");
+
+        errorBox.style.display = "none";
+        btnLogin.innerText = "Memeriksa akun...";
+        btnLogin.disabled = true;
 
         try {
-            if (!cachedData) {
-                const response = await fetch(SCRIPT_URL);
-                cachedData = await response.json();
+            const url = `${SCRIPT_URL}?action=login&nohp=${encodeURIComponent(noHp)}&password=${encodeURIComponent(password)}`;
+            const response = await fetch(url);
+            const res = await response.json();
+
+            if (res.status === "success") {
+                localStorage.setItem("armada_user", res.nama);
+                tampilkanPortal(res.nama);
+            } else {
+                errorBox.innerText = res.message || "Nomor HP atau Password salah!";
+                errorBox.style.display = "block";
             }
-
-            loadingText.style.display = "none";
-
-            const filtered = cachedData.filter(item => 
-                item.plat.replace(/\s+/g, '') === inputPlat
-            );
-
-            if (filtered.length === 0) {
-                resultContainer.innerHTML = `<div class="alert">Data pengajuan untuk plat nomor <strong>${inputRaw.toUpperCase()}</strong> tidak ditemukan.</div>`;
-                return;
-            }
-
-            filtered.forEach(item => {
-                let badgeClass = "badge";
-                let borderColor = "#ffc107";
-                const statusLower = item.status.toLowerCase();
-
-                if (statusLower.includes("setuju")) {
-                    badgeClass = "badge badge-success";
-                    borderColor = "#198754";
-                } else if (statusLower.includes("tolak")) {
-                    badgeClass = "badge badge-danger";
-                    borderColor = "#dc3545";
-                } else if (statusLower.includes("selesai")) {
-                    badgeClass = "badge badge-primary";
-                    borderColor = "#0d6efd";
-                }
-
-                const noteHTML = (item.catatan && item.catatan !== "-") 
-                    ? `<div class="result-note"><strong>Catatan Admin:</strong> ${item.catatan}</div>` 
-                    : "";
-
-                const cardHTML = `
-                    <div class="result-card" style="border-left-color: ${borderColor};">
-                        <div class="result-header">
-                            <span>${item.plat} ${item.pengajuan !== "-" ? "— " + item.pengajuan : ""}</span>
-                            <span class="${badgeClass}">${item.status}</span>
-                        </div>
-                        <div class="result-meta">Tanggal: ${item.tanggal} | Pemohon: ${item.nama}</div>
-                        ${noteHTML}
-                    </div>
-                `;
-                resultContainer.insertAdjacentHTML("beforeend", cardHTML);
-            });
-
         } catch (error) {
-            loadingText.style.display = "none";
-            resultContainer.innerHTML = `<div class="alert" style="background:#f8d7da; color:#842029;">Gagal memuat data. Pastikan koneksi internet lancar.</div>`;
+            errorBox.innerText = "Gagal terhubung ke server. Periksa koneksi internet Anda.";
+            errorBox.style.display = "block";
             console.error(error);
+        } finally {
+            btnLogin.innerText = "Masuk";
+            btnLogin.disabled = false;
         }
     }
-</script>
 
-</body>
-</html>
+    function tampilkanPortal(namaUser) {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("portalSection").style.display = "block";
+        document.getElementById("userDisplayName").innerText = namaUser;
+    }
+
+    function prosesLogout() {
+        localStorage.removeItem("armada_user");
+        document.getElementById("portalSection").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("loginForm").reset();
+    }
+
+    async function cekStatus() {
+        const inputRaw = document.getElementById("searchPlate").value.trim();
