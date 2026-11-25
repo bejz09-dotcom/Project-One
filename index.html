@@ -4,58 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Operasional Armada</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .app-card { max-width: 550px; margin: 40px auto; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .btn-launch { background-color: #0d6efd; color: white; padding: 14px; font-size: 1.1rem; font-weight: bold; border-radius: 12px; transition: all 0.3s ease; }
-        .btn-launch:hover { background-color: #0b5ed7; transform: translateY(-2px); color: white; }
-        .icon-box { font-size: 3.5rem; margin-bottom: 10px; }
-        .status-card { border-left: 5px solid #0d6efd; background-color: #f8f9fa; border-radius: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1c1e21;
+            padding: 20px 15px;
+        }
+        .app-card {
+            max-width: 500px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .header { text-align: center; margin-bottom: 24px; }
+        .icon-box { font-size: 48px; margin-bottom: 8px; }
+        .header h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .header p { font-size: 14px; color: #65676b; }
+
+        /* Tombol Utama Buat Pengajuan */
+        .btn-launch {
+            display: block;
+            width: 100%;
+            background-color: #0d6efd;
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+        .btn-launch:hover { background-color: #0b5ed7; }
+
+        .jump-link {
+            display: block;
+            text-align: center;
+            font-size: 14px;
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        hr { border: 0; border-top: 1px solid #e4e6eb; margin: 20px 0; }
+
+        /* Bagian Cek Status */
+        .status-section h3 { font-size: 18px; margin-bottom: 6px; }
+        .status-section p { font-size: 13px; color: #65676b; margin-bottom: 14px; }
+        .search-box { display: flex; gap: 8px; margin-bottom: 16px; }
+        .search-box input {
+            flex: 1;
+            padding: 12px 14px;
+            font-size: 15px;
+            border: 1px solid #ccd0d5;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+        .search-box button {
+            background-color: #212529;
+            color: #ffffff;
+            border: none;
+            padding: 0 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .search-box button:hover { background-color: #343a40; }
+
+        /* Kartu Hasil Pencarian */
+        .result-card {
+            background-color: #f8f9fa;
+            border-left: 5px solid #ffc107;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background-color: #ffc107;
+            color: #000;
+        }
+        .badge-success { background-color: #198754; color: #fff; }
+        .badge-danger { background-color: #dc3545; color: #fff; }
+        .badge-primary { background-color: #0d6efd; color: #fff; }
+        .result-meta { font-size: 13px; color: #65676b; }
+        .result-note {
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        .loading { text-align: center; font-size: 14px; color: #65676b; padding: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container px-3">
-    <div class="card app-card p-4 p-md-5 bg-white">
-        <!-- Header Portal -->
-        <div class="text-center">
-            <div class="icon-box">🚗</div>
-            <h3 class="fw-bold text-dark mb-1">Sistem Operasional Armada</h3>
-            <p class="text-muted mb-4">Pengajuan Perbaikan & Cek Status Persetujuan</p>
+<div class="app-card">
+    <div class="header">
+        <div class="icon-box">🚗</div>
+        <h2>Sistem Operasional Armada</h2>
+        <p>Pengajuan Perbaikan & Cek Status Persetujuan</p>
+    </div>
+
+    <!-- Tombol Utama ke Google Form -->
+    <a href="https://google.com" target="_blank" class="btn-launch">
+        🚀 Buat Pengajuan Baru
+    </a>
+
+    <a href="#cek-status-section" class="jump-link">
+        🔍 Sudah mengajukan? Cek Status Pengajuan di bawah ↓
+    </a>
+
+    <hr>
+
+    <!-- Bagian Cek Status -->
+    <div id="cek-status-section" class="status-section">
+        <h3>🔍 Cek Status Pengajuan</h3>
+        <p>Masukkan Plat Nomor kendaraan untuk melihat status persetujuan dari kantor.</p>
+        
+        <div class="search-box">
+            <input type="text" id="searchPlate" placeholder="Contoh: B 777 ZP">
+            <button type="button" onclick="cekStatus()">Cari</button>
         </div>
 
-        <!-- BAGIAN 1: TOMBOL FORM PENGAJUAN -->
-        <a href="https://google.com" class="btn btn-launch w-100 shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3">
-            <span>🚀 Buat Pengajuan Baru</span>
-        </a>
-
-        <!-- Link cepat melompat ke bagian cek status -->
-        <div class="text-center mb-4">
-            <a href="#cek-status-section" class="text-decoration-none fw-semibold text-primary">
-                🔍 Sudah mengajukan? Cek Status Pengajuan di bawah ↓
-            </a>
-        </div>
-
-        <hr class="my-4 text-muted">
-
-        <!-- BAGIAN 2: FITUR CEK STATUS PENGAJUAN -->
-        <div id="cek-status-section">
-            <h5 class="fw-bold text-dark mb-2">🔍 Cek Status Pengajuan</h5>
-            <p class="text-muted small mb-3">Masukkan Plat Nomor kendaraan untuk melihat status persetujuan dari kantor.</p>
-            
-            <div class="input-group mb-3">
-                <input type="text" id="searchPlate" class="form-control form-control-lg text-uppercase" placeholder="Contoh: B 1234 CD">
-                <button class="btn btn-dark px-4 fw-bold" type="button" onclick="cekStatus()">Cari</button>
-            </div>
-
-            <!-- Area Hasil Pencarian -->
-            <div id="loadingText" class="text-center text-muted my-3 d-none">
-                <div class="spinner-border spinner-border-sm text-primary" role="status"></div> Mengambil data terbaru...
-            </div>
-            
-            <div id="resultContainer" class="mt-3"></div>
-        </div>
+        <div id="loadingText" class="loading" style="display: none;">Mengambil data terbaru...</div>
+        <div id="resultContainer"></div>
     </div>
 </div>
 
@@ -66,7 +167,8 @@
     let cachedData = null;
 
     async function cekStatus() {
-        const inputPlat = document.getElementById("searchPlate").value.trim().toUpperCase().replace(/\s+/g, '');
+        const inputRaw = document.getElementById("searchPlate").value.trim();
+        const inputPlat = inputRaw.toUpperCase().replace(/\s+/g, '');
         const resultContainer = document.getElementById("resultContainer");
         const loadingText = document.getElementById("loadingText");
 
@@ -76,62 +178,61 @@
         }
 
         resultContainer.innerHTML = "";
-        loadingText.classList.remove("d-none");
+        loadingText.style.display = "block";
 
         try {
-            // Mengambil data dari Google Sheets jika belum tersimpan di memori sementara
             if (!cachedData) {
                 const response = await fetch(SCRIPT_URL);
                 cachedData = await response.json();
             }
 
-            loadingText.classList.add("d-none");
+            loadingText.style.display = "none";
 
-            // Mencocokkan plat nomor (mengabaikan perbedaan spasi)
             const filtered = cachedData.filter(item => 
                 item.plat.replace(/\s+/g, '') === inputPlat
             );
 
             if (filtered.length === 0) {
-                resultContainer.innerHTML = `
-                    <div class="alert alert-warning text-center small">
-                        Data pengajuan untuk plat nomor <strong>${document.getElementById("searchPlate").value.toUpperCase()}</strong> tidak ditemukan.
-                    </div>`;
+                resultContainer.innerHTML = `<div class="alert">Data pengajuan untuk plat nomor <strong>${inputRaw.toUpperCase()}</strong> tidak ditemukan.</div>`;
                 return;
             }
 
-            // Menampilkan daftar pengajuan untuk plat nomor tersebut
             filtered.forEach(item => {
-                let badgeColor = "bg-warning text-dark";
+                let badgeClass = "badge";
                 let borderColor = "#ffc107";
+                const statusLower = item.status.toLowerCase();
 
-                if (item.status.toLowerCase().includes("setuju")) {
-                    badgeColor = "bg-success";
+                if (statusLower.includes("setuju")) {
+                    badgeClass = "badge badge-success";
                     borderColor = "#198754";
-                } else if (item.status.toLowerCase().includes("tolak")) {
-                    badgeColor = "bg-danger";
+                } else if (statusLower.includes("tolak")) {
+                    badgeClass = "badge badge-danger";
                     borderColor = "#dc3545";
-                } else if (item.status.toLowerCase().includes("selesai")) {
-                    badgeColor = "bg-primary";
+                } else if (statusLower.includes("selesai")) {
+                    badgeClass = "badge badge-primary";
                     borderColor = "#0d6efd";
                 }
 
+                const noteHTML = (item.catatan && item.catatan !== "-") 
+                    ? `<div class="result-note"><strong>Catatan Admin:</strong> ${item.catatan}</div>` 
+                    : "";
+
                 const cardHTML = `
-                    <div class="p-3 mb-2 status-card shadow-sm" style="border-left-color: ${borderColor};">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-dark">${item.plat} — ${item.pengajuan}</span>
-                            <span class="badge ${badgeColor}">${item.status}</span>
+                    <div class="result-card" style="border-left-color: ${borderColor};">
+                        <div class="result-header">
+                            <span>${item.plat} ${item.pengajuan !== "-" ? "— " + item.pengajuan : ""}</span>
+                            <span class="${badgeClass}">${item.status}</span>
                         </div>
-                        <div class="small text-muted mb-1">Tanggal: ${item.tanggal} | Pemohon: ${item.nama}</div>
-                        ${item.catatan && item.catatan !== "-" ? `<div class="small text-dark bg-white p-2 rounded border mt-2"><strong>Catatan Admin:</strong> ${item.catatan}</div>` : ""}
+                        <div class="result-meta">Tanggal: ${item.tanggal} | Pemohon: ${item.nama}</div>
+                        ${noteHTML}
                     </div>
                 `;
                 resultContainer.insertAdjacentHTML("beforeend", cardHTML);
             });
 
         } catch (error) {
-            loadingText.classList.add("d-none");
-            resultContainer.innerHTML = `<div class="alert alert-danger small">Gagal memuat data. Pastikan koneksi internet lancar.</div>`;
+            loadingText.style.display = "none";
+            resultContainer.innerHTML = `<div class="alert" style="background:#f8d7da; color:#842029;">Gagal memuat data. Pastikan koneksi internet lancar.</div>`;
             console.error(error);
         }
     }
